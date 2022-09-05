@@ -19,42 +19,30 @@ class ProductController extends Controller
         $message = 'Data Not Found';
         $data = json_decode( $this->data );
         foreach ( $data->products as $product ) {
-            if ( $request->category && $product->category !== $request->category )
-            {
+            if ( ( $request->category && $product->category !== $request->category ) 
+                ||  ( $request->price && $product->price !== (int)$request->price ) ) {
                 continue;
             }
-            if ( $request->price && $product->price !== (int)$request->price )
-            {
-                continue;
-            }
+
             $message = 'The data Was Found';
             $array['sku']   = $product->sku;
             $array['name']  = $product->name;
+            $array['category']          = $product->category;
+            $array['price']['original'] = $product->price;
 
-            if ( $product->category === 'insurance' )
-            {
-                $array['category']                      = $product->category;
-                $array['price']['original']             = $product->price;
+            if ( $product->category === 'insurance' ) {
                 $array['price']['final']                = round( $product->price * 0.70 );
                 $array['price']['discount_percentage']  = '30%';
-                $array['price']['currency']             = 'EUR';
-
-            } else if ( $product->sku === '000003' )
-            {
-                $array['category']                      = $product->category;
-                $array['price']['original']             = $product->price;
+            } elseif ( $product->sku === '000003' ) {
                 $array['price']['final']                = round( $product->price * 0.85 );
                 $array['price']['discount_percentage']  = '15%';
-                $array['price']['currency']             = 'EUR';
-            }else {
-                
-                $array['category']                      = $product->category;
-                $array['price']['original']             = $product->price;
+            } else {
                 $array['price']['final']                = $product->price;
                 $array['price']['discount_percentage']  = null;
-                $array['price']['currency']             = 'EUR';
+               
 
             }
+            $array['price']['currency']             = 'EUR';
             $json [] = $array;
         }
         
